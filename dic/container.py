@@ -1,5 +1,6 @@
 import abc
 import inspect
+from . import rel
 
 
 class DependencyResolutionError(Exception):
@@ -123,6 +124,12 @@ class Container(object):
         :param component_type: The type of the component (e.g. a class)
         :return: An instance of the component.
         """
+        # relationship (always lazy for now)
+        if isinstance(component_type, rel.Relationship):
+            component_type._container = self
+            return component_type
+
+        # normal component
         if component_type not in self.registry_map:
             raise DependencyResolutionError(
                 "The requested type %s was not found in the container. Is it registered?" % component_type.__name__)
