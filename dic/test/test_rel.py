@@ -8,7 +8,7 @@ class Part(object):
 
 
 class GuyWhoPutsUpWithLaziness(object):
-    def __init__(self, bomb: dic.rel.lazy(Part)):
+    def __init__(self, bomb: dic.rel.Lazy(Part)):
         self.lazy_part = bomb
 
     def do_it(self, data):
@@ -16,7 +16,7 @@ class GuyWhoPutsUpWithLaziness(object):
 
 
 class SuperFactory(object):
-    def __init__(self, part_factory: dic.rel.factory(Part)):
+    def __init__(self, part_factory: dic.rel.Factory(Part)):
         self.part_factory = part_factory
 
     def make(self, data):
