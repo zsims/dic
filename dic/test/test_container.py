@@ -43,6 +43,16 @@ class ContainerBuilderTestCase(unittest.TestCase):
         # Assert
         self.assertEqual(len(container.registry_map), 1)
 
+    def test_register_class_defaults_instance_per_dep(self):
+        # Arrange
+        self.builder.register_class(Standalone)
+
+        # Act
+        container = self.builder.build()
+
+        # Assert
+        self.assertIsInstance(container.registry_map[Standalone].scope, dic.container.InstancePerDependency)
+
 
 class ContainerTestCase(unittest.TestCase):
     def setUp(self):
@@ -81,6 +91,43 @@ class ContainerTestCase(unittest.TestCase):
         # Assert
         with self.assertRaises(dic.container.DependencyResolutionError) as cm:
             container.resolve(SimpleComponent)
+
+    def test_resolve_single_instance(self):
+        # Arrange
+        self.builder.register_class(Standalone, scope=dic.container.SingleInstance)
+        container = self.builder.build()
+
+        # Act
+        x = container.resolve(Standalone)
+        y = container.resolve(Standalone)
+
+        # Assert
+        self.assertIs(x, y)
+
+    def test_resolve_dep_single_instance(self):
+        # Arrange
+        self.builder.register_class(Standalone, scope=dic.container.SingleInstance)
+        self.builder.register_class(SimpleComponent)
+        container = self.builder.build()
+
+        # Act
+        x = container.resolve(SimpleComponent)
+        y = container.resolve(Standalone)
+
+        # Assert
+        self.assertIs(x.standalone, y)
+
+    def test_resolve_instance_per_dep(self):
+        # Arrange
+        self.builder.register_class(Standalone)
+        container = self.builder.build()
+
+        # Act
+        x = container.resolve(Standalone)
+        y = container.resolve(Standalone)
+
+        # Assert
+        self.assertIsNot(x, y)
 
 if __name__ == '__main__':
     unittest.main()
