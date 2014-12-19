@@ -1,47 +1,16 @@
 import abc
 import inspect
 from . import rel
+from . import scope
 
 
 class DependencyResolutionError(Exception):
     pass
 
 
-class Scope(metaclass=abc.ABCMeta):
-    """
-    Controls the lifetime scope of a component registration.
-    """
-    @abc.abstractmethod
-    def instance(self, container, registration):
-        """
-        Gets the instance of the component given its registration.
-        :param registration: The component registration
-        :return: The instance
-        """
-        pass
-
-
-class InstancePerDependency(Scope):
-    """
-    Creates an instance per dependency
-    """
-    def instance(self, container, registration):
-        return registration.create(container)
-
-
-class SingleInstance(Scope):
-    def __init__(self):
-        self.component_instance = None
-
-    def instance(self, container, registration):
-        if self.component_instance is None:
-            self.component_instance = registration.create(container)
-        return self.component_instance
-
-
 class ComponentRegistration(metaclass=abc.ABCMeta):
-    def __init__(self, scope):
-        self.scope = scope
+    def __init__(self, component_scope):
+        self.component_scope = component_scope
 
     @abc.abstractmethod
     def create(self, container):
@@ -59,7 +28,7 @@ class ComponentRegistration(metaclass=abc.ABCMeta):
         :param container: The container to resolve dependencies from.
         :return: An instance of the component.
         """
-        return self.scope.instance(container, self)
+        return self.component_scope.instance(container, self)
 
 
 class ConstructorRegistration(ComponentRegistration):
@@ -143,13 +112,13 @@ class ContainerBuilder(object):
     def __init__(self):
         self.registry = {}
 
-    def register_class(self, class_type, scope=InstancePerDependency):
+    def register_class(self, class_type, component_scope=scope.InstancePerDependency):
         """
         Registers the given class for creation via its constructor.
         :param class_type: The class type.
-        :param scope: The scope of the component, defaults to instance per dependency.
+        :param component_scope: The scope of the component, defaults to instance per dependency.
         """
-        self.registry[class_type] = ConstructorRegistration(class_type, scope())
+        self.registry[class_type] = ConstructorRegistration(class_type, component_scope())
 
     def build(self):
         """

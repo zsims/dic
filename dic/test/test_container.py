@@ -51,7 +51,7 @@ class ContainerBuilderTestCase(unittest.TestCase):
         container = self.builder.build()
 
         # Assert
-        self.assertIsInstance(container.registry_map[Standalone].scope, dic.container.InstancePerDependency)
+        self.assertIsInstance(container.registry_map[Standalone].component_scope, dic.scope.InstancePerDependency)
 
 
 class ContainerTestCase(unittest.TestCase):
@@ -94,7 +94,7 @@ class ContainerTestCase(unittest.TestCase):
 
     def test_resolve_single_instance(self):
         # Arrange
-        self.builder.register_class(Standalone, scope=dic.container.SingleInstance)
+        self.builder.register_class(Standalone, component_scope=dic.scope.SingleInstance)
         container = self.builder.build()
 
         # Act
@@ -106,7 +106,7 @@ class ContainerTestCase(unittest.TestCase):
 
     def test_resolve_dep_single_instance(self):
         # Arrange
-        self.builder.register_class(Standalone, scope=dic.container.SingleInstance)
+        self.builder.register_class(Standalone, component_scope=dic.scope.SingleInstance)
         self.builder.register_class(SimpleComponent)
         container = self.builder.build()
 
