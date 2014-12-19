@@ -13,7 +13,7 @@ class ComponentRegistration(metaclass=abc.ABCMeta):
         self.component_scope = component_scope
 
     @abc.abstractmethod
-    def create(self, container):
+    def _create(self, container):
         """
         Creates a new instance of the component using the given container
         to resolve dependencies regardless of the scope.
@@ -22,13 +22,13 @@ class ComponentRegistration(metaclass=abc.ABCMeta):
         """
         pass
 
-    def create_with_scope(self, container):
+    def create(self, container):
         """
-        Creates a new instance of the component using the registered scope.
+        Creates a new instance of the component, respecting the scope.
         :param container: The container to resolve dependencies from.
         :return: An instance of the component.
         """
-        return self.component_scope.instance(container, self)
+        return self.component_scope.instance(lambda: self._create(container))
 
 
 class ConstructorRegistration(ComponentRegistration):
@@ -68,7 +68,7 @@ class ConstructorRegistration(ComponentRegistration):
         if constructor is not None:
             self.argument_types = constructor.__annotations__
 
-    def create(self, container):
+    def _create(self, container):
         argument_map = {}
         for (arg_name, arg_type) in self.argument_types.items():
             argument_map[arg_name] = container.resolve(arg_type)
@@ -102,7 +102,7 @@ class Container(object):
         if component_type not in self.registry_map:
             raise DependencyResolutionError(
                 "The requested type %s was not found in the container. Is it registered?" % component_type.__name__)
-        return self.registry_map[component_type].create_with_scope(self)
+        return self.registry_map[component_type].create(self)
 
 
 class ContainerBuilder(object):

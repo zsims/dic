@@ -6,10 +6,10 @@ class Scope(metaclass=abc.ABCMeta):
     Controls the lifetime scope of a component registration.
     """
     @abc.abstractmethod
-    def instance(self, container, registration):
+    def instance(self, create_function):
         """
         Gets the instance of the component given its registration.
-        :param registration: The component registration
+        :param create_function: The function to create a new component, if required.
         :return: The instance
         """
         pass
@@ -19,15 +19,15 @@ class InstancePerDependency(Scope):
     """
     Creates an instance per dependency
     """
-    def instance(self, container, registration):
-        return registration.create(container)
+    def instance(self, create_function):
+        return create_function()
 
 
 class SingleInstance(Scope):
     def __init__(self):
         self.component_instance = None
 
-    def instance(self, container, registration):
+    def instance(self, create_function):
         if self.component_instance is None:
-            self.component_instance = registration.create(container)
+            self.component_instance = create_function()
         return self.component_instance
