@@ -1,4 +1,5 @@
 import abc
+import threading
 
 
 class Relationship(metaclass=abc.ABCMeta):
@@ -44,20 +45,25 @@ class _ResolvedLazy(object):
         self._container = container
         self._component = None
         self._component_type = component_type
+        self._lock = threading.Lock()
+
     @property
     def has_value(self):
-        return self._component is not None
+        with self._lock:
+            return self._component is not None
 
     @property
     def value(self):
-        if self._component is None:
-            self._component = self._container.resolve(self._component_type)
-        return self._component
+        with self._lock:
+            if self._component is None:
+                self._component = self._container.resolve(self._component_type)
+            return self._component
 
 
 class Lazy(Relationship):
     """
     Models a lazy relationship. Dependency lookup is delayed until the value is resolved for the first time.
+    Lazy is thread-safe, so only one instance will be resolved if two threads ask at the same time.
     """
     def __init__(self, component_type):
         self._component_type = component_type

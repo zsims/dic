@@ -1,6 +1,6 @@
 import dic
+import threading
 import unittest
-
 
 class Standalone(object):
     pass
@@ -188,6 +188,7 @@ class ContainerTestCase(unittest.TestCase):
         # Assert
         self.assertIsNot(component1, component2)
         self.assertIs(component1.standalone, component2.standalone)
+
 
 if __name__ == '__main__':
     unittest.main()
