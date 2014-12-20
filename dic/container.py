@@ -112,13 +112,20 @@ class ContainerBuilder(object):
     def __init__(self):
         self.registry = {}
 
-    def register_class(self, class_type, component_scope=scope.InstancePerDependency):
+    def register_class(self, class_type, component_scope=scope.InstancePerDependency, register_as=None):
         """
         Registers the given class for creation via its constructor.
         :param class_type: The class type.
         :param component_scope: The scope of the component, defaults to instance per dependency.
+        :param register_as: The types to register the class as, defaults to the given class_type.
         """
-        self.registry[class_type] = ConstructorRegistration(class_type, component_scope())
+        if register_as is None:
+            register_as = [class_type]
+
+        registration = ConstructorRegistration(class_type, component_scope())
+
+        for available_as in register_as:
+            self.registry[available_as] = registration
 
     def build(self):
         """

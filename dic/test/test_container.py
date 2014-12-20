@@ -5,6 +5,8 @@ import unittest
 class Standalone(object):
     pass
 
+class SpecialStandalone(Standalone):
+    pass
 
 class SimpleComponent(object):
     def __init__(self, s: Standalone):
@@ -52,6 +54,16 @@ class ContainerBuilderTestCase(unittest.TestCase):
 
         # Assert
         self.assertIsInstance(container.registry_map[Standalone].component_scope, dic.scope.InstancePerDependency)
+
+    def test_register_as_another_type(self):
+        # Arrange
+        self.builder.register_class(SpecialStandalone, register_as=[Standalone])
+
+        # Act
+        container = self.builder.build()
+
+        # Assert
+        self.assertIn(Standalone, container.registry_map)
 
 
 class ContainerTestCase(unittest.TestCase):
@@ -128,6 +140,17 @@ class ContainerTestCase(unittest.TestCase):
 
         # Assert
         self.assertIsNot(x, y)
+
+    def test_resolve_via_alias(self):
+        # Arrange
+        self.builder.register_class(SpecialStandalone, register_as=[Standalone])
+        container = self.builder.build()
+
+        # Act
+        x = container.resolve(Standalone)
+
+        # Assert
+        self.assertIsInstance(x, SpecialStandalone)
 
 if __name__ == '__main__':
     unittest.main()
