@@ -15,7 +15,17 @@ setup(
     scripts=[],
     url='https://github.com/zsims/dic',
     license='LICENSE.txt',
-    description='Inversion of Control micro-framework',
+    description='Dependency Injection Container Micro-framework for implementing IoC',
     long_description=long_description,
     install_requires=[],
+    classifiers=[
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Topic :: Software Development :: Libraries :: Application Frameworks',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+    ],
+    keywords='development design ioc di',
 )
