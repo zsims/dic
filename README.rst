@@ -2,10 +2,19 @@ dic
 ===
 
 Dependency Injection Container for Python 3+ influenced partially by Autofac_. dic aims to be a tiny framework to help
-you build software.
+you manage dependencies.
 
 dic uses Python 3 annotations to provide hints for the components that should be injected.
 
+Install
+=======
+dic is available via pip:
+ ::
+
+    pip install dic
+
+Features
+========
 Currently, dic supports:
 
 1. Constructor injection for classes
