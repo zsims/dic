@@ -93,6 +93,24 @@ class FactoryTestCase(unittest.TestCase):
         # Assert
         self.assertEqual("data", guy.lazy_part.value.data)
 
+    def test_lazy_isolated(self):
+        # Arrange
+        self.builder.register_class(Part)
+        self.builder.register_class(GuyWhoPutsUpWithLaziness)
+        container = self.builder.build()
+        guy = container.resolve(GuyWhoPutsUpWithLaziness)
+        guy2 = container.resolve(GuyWhoPutsUpWithLaziness)
+
+        self.assertFalse(guy.lazy_part.has_value)
+        self.assertFalse(guy2.lazy_part.has_value)
+
+        # Act
+        guy.do_it("data")
+
+        # Assert
+        self.assertTrue(guy.lazy_part.has_value)
+        self.assertFalse(guy2.lazy_part.has_value)
+
     def test_factory_can_provide_arguments(self):
         # Arrange
         self.builder.register_class(Row)

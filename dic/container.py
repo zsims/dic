@@ -107,10 +107,10 @@ class Container(object):
         :param kwargs: Overriding arguments to use (by name) instead of resolving them.
         :return: An instance of the component.
         """
-        # relationship (always lazy for now)
+        # relationship
         if isinstance(component_type, rel.Relationship):
-            component_type._container = self
-            return component_type
+            # expand the relationship
+            return component_type.resolve(self)
 
         # normal component
         if component_type not in self.registry_map:

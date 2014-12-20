@@ -95,7 +95,7 @@ Using a factory:
 
     x = container.resolve(BuildsThing)
 
-    #
+    # use it
     thing = x.build_me_a_thing()
     # ...
 
