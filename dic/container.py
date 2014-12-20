@@ -44,9 +44,9 @@ class _ConstructorRegistration(_ComponentRegistration):
         # map of argument name -> argument type
         self.argument_types = {}
 
-        self.__inspect_constructor()
+        self._inspect_constructor()
 
-    def __find_constructor(self):
+    def _find_constructor(self):
         """
         Finds the constructor from the class_type.
         :return: The constructor function.
@@ -65,8 +65,8 @@ class _ConstructorRegistration(_ComponentRegistration):
         # No explicit __init__
         return None
 
-    def __inspect_constructor(self):
-        constructor = self.__find_constructor()
+    def _inspect_constructor(self):
+        constructor = self._find_constructor()
         if constructor is not None:
             self.argument_types = constructor.__annotations__
 
