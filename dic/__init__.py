@@ -1,3 +1,5 @@
 __version__ = '0.1'
 
-from . import container, rel, scope
+from .container import ContainerBuilder, Container, DependencyResolutionError
+from .rel import Factory, Lazy, Relationship
+from .scope import Scope, SingleInstance, InstancePerDependency
