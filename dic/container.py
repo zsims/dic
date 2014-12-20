@@ -8,30 +8,32 @@ class DependencyResolutionError(Exception):
     pass
 
 
-class ComponentRegistration(metaclass=abc.ABCMeta):
+class _ComponentRegistration(metaclass=abc.ABCMeta):
     def __init__(self, component_scope):
         self.component_scope = component_scope
 
     @abc.abstractmethod
-    def _create(self, container):
+    def _create(self, container, overriding_args):
         """
         Creates a new instance of the component using the given container
         to resolve dependencies regardless of the scope.
         :param container: The container to resolve dependencies from.
+        :param overriding_args: Overriding arguments to use (by name) instead of resolving them.
         :return: An instance of the component.
         """
         pass
 
-    def create(self, container):
+    def create(self, container, overriding_args):
         """
         Creates a new instance of the component, respecting the scope.
         :param container: The container to resolve dependencies from.
+        :param overriding_args: Overriding arguments to use (by name) instead of resolving them.
         :return: An instance of the component.
         """
-        return self.component_scope.instance(lambda: self._create(container))
+        return self.component_scope.instance(lambda: self._create(container, overriding_args))
 
 
-class ConstructorRegistration(ComponentRegistration):
+class _ConstructorRegistration(_ComponentRegistration):
     """
     Creates a component via the constructor.
     """
@@ -68,20 +70,22 @@ class ConstructorRegistration(ComponentRegistration):
         if constructor is not None:
             self.argument_types = constructor.__annotations__
 
-    def _create(self, container):
-        argument_map = {}
+    def _create(self, container, overriding_args):
+        argument_map = overriding_args or {}
         for (arg_name, arg_type) in self.argument_types.items():
-            argument_map[arg_name] = container.resolve(arg_type)
+            # not already provided, try resolve the argument
+            if arg_name not in argument_map:
+                argument_map[arg_name] = container.resolve(arg_type)
 
         return self.class_type(**argument_map)
 
 
-class CallbackRegistration(ComponentRegistration):
+class _CallbackRegistration(_ComponentRegistration):
     def __init__(self, callback, component_scope):
         super().__init__(component_scope)
         self.callback = callback
 
-    def _create(self, container):
+    def _create(self, container, overriding_args):
         return self.callback(container)
 
 
@@ -96,10 +100,11 @@ class Container(object):
         """
         self.registry_map = registry_map
 
-    def resolve(self, component_type):
+    def resolve(self, component_type, **kwargs):
         """
         Resolves an instance of the component type.
         :param component_type: The type of the component (e.g. a class)
+        :param kwargs: Overriding arguments to use (by name) instead of resolving them.
         :return: An instance of the component.
         """
         # relationship (always lazy for now)
@@ -111,7 +116,7 @@ class Container(object):
         if component_type not in self.registry_map:
             raise DependencyResolutionError(
                 "The requested type %s was not found in the container. Is it registered?" % component_type.__name__)
-        return self.registry_map[component_type].create(self)
+        return self.registry_map[component_type].create(self, kwargs)
 
 
 class ContainerBuilder(object):
@@ -135,7 +140,7 @@ class ContainerBuilder(object):
         :param component_scope: The scope of the component, defaults to instance per dependency.
         :param register_as: The types to register the class as, defaults to the given class_type.
         """
-        registration = ConstructorRegistration(class_type, component_scope())
+        registration = _ConstructorRegistration(class_type, component_scope())
         self._register(class_type, registration, register_as)
 
     def register_callback(self, class_type, callback, component_scope=scope.InstancePerDependency, register_as=None):
@@ -146,7 +151,7 @@ class ContainerBuilder(object):
         :param component_scope: The scope of the component, defaults to instance per dependency.
         :param register_as: The types to register the class as, defaults to the given class_type.
         """
-        registration = CallbackRegistration(callback, component_scope())
+        registration = _CallbackRegistration(callback, component_scope())
         self._register(class_type, registration, register_as)
 
     def build(self):

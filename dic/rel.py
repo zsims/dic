@@ -7,13 +7,15 @@ class Factory(Relationship):
     """
     Models a factory relationship capable of creating the given type. The scope of the registered component is
     respected. Meaning a SingleInstance registration will return the same instance for multiple factory calls.
+
+    Overriding arguments can be provided.
     """
     def __init__(self, component_type):
         super().__init__()
         self.component_type = component_type
 
     def __call__(self, *args, **kwargs):
-        return self._container.resolve(self.component_type)
+        return self._container.resolve(self.component_type, **kwargs)
 
 
 class Lazy(Relationship):
