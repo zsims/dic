@@ -35,8 +35,8 @@ class ConstructorRegistration(ComponentRegistration):
     """
     Creates a component via the constructor.
     """
-    def __init__(self, class_type, scope):
-        super().__init__(scope)
+    def __init__(self, class_type, component_scope):
+        super().__init__(component_scope)
 
         self.class_type = class_type
         # map of argument name -> argument type
@@ -76,6 +76,15 @@ class ConstructorRegistration(ComponentRegistration):
         return self.class_type(**argument_map)
 
 
+class CallbackRegistration(ComponentRegistration):
+    def __init__(self, callback, component_scope):
+        super().__init__(component_scope)
+        self.callback = callback
+
+    def _create(self, container):
+        return self.callback(container)
+
+
 class Container(object):
     """
     IoC container.
@@ -112,6 +121,13 @@ class ContainerBuilder(object):
     def __init__(self):
         self.registry = {}
 
+    def _register(self, class_type, registration, register_as):
+        if register_as is None:
+            register_as = [class_type]
+
+        for available_as in register_as:
+            self.registry[available_as] = registration
+
     def register_class(self, class_type, component_scope=scope.InstancePerDependency, register_as=None):
         """
         Registers the given class for creation via its constructor.
@@ -119,13 +135,19 @@ class ContainerBuilder(object):
         :param component_scope: The scope of the component, defaults to instance per dependency.
         :param register_as: The types to register the class as, defaults to the given class_type.
         """
-        if register_as is None:
-            register_as = [class_type]
-
         registration = ConstructorRegistration(class_type, component_scope())
+        self._register(class_type, registration, register_as)
 
-        for available_as in register_as:
-            self.registry[available_as] = registration
+    def register_callback(self, class_type, callback, component_scope=scope.InstancePerDependency, register_as=None):
+        """
+        Registers the given class for creation via the given callback.
+        :param class_type: The class type.
+        :param callback: The function to call to create/get an instance, of the form fn(container)
+        :param component_scope: The scope of the component, defaults to instance per dependency.
+        :param register_as: The types to register the class as, defaults to the given class_type.
+        """
+        registration = CallbackRegistration(callback, component_scope())
+        self._register(class_type, registration, register_as)
 
     def build(self):
         """

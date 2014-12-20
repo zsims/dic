@@ -65,6 +65,17 @@ class ContainerBuilderTestCase(unittest.TestCase):
         # Assert
         self.assertIn(Standalone, container.registry_map)
 
+    def test_register_callback(self):
+        # Arrange
+        self.builder.register_callback(SimpleComponent, lambda c: SimpleComponent(c.resolve(Standalone)))
+
+        # Act
+        container = self.builder.build()
+
+        # Assert
+        self.assertIn(SimpleComponent, container.registry_map)
+        self.assertNotIn(Standalone, container.registry_map)
+
 
 class ContainerTestCase(unittest.TestCase):
     def setUp(self):
@@ -151,6 +162,32 @@ class ContainerTestCase(unittest.TestCase):
 
         # Assert
         self.assertIsInstance(x, SpecialStandalone)
+
+    def test_resolve_with_callback(self):
+        # Arrange
+        standalone = Standalone()
+        self.builder.register_callback(SimpleComponent, lambda c: SimpleComponent(standalone))
+        container = self.builder.build()
+
+        # Act
+        component = container.resolve(SimpleComponent)
+
+        # Assert
+        self.assertIs(component.standalone, standalone)
+
+    def test_resolve_callback_respects_scope(self):
+        # Arrange
+        self.builder.register_class(Standalone, component_scope=dic.scope.SingleInstance)
+        self.builder.register_callback(SimpleComponent, lambda c: SimpleComponent(c.resolve(Standalone)))
+        container = self.builder.build()
+
+        # Act
+        component1 = container.resolve(SimpleComponent)
+        component2 = container.resolve(SimpleComponent)
+
+        # Assert
+        self.assertIsNot(component1, component2)
+        self.assertIs(component1.standalone, component2.standalone)
 
 if __name__ == '__main__':
     unittest.main()
