@@ -4,38 +4,29 @@
 import cherrypy
 import dic
 
-songs = {
-    '1': {
-        'title': 'Lumberjack Song',
-        'artist': 'Canadian Guard Choir'
-    },
-
-    '2': {
-        'title': 'Always Look On the Bright Side of Life',
-        'artist': 'Eric Idle'
-    },
-
-    '3': {
-        'title': 'Spam Spam Spam',
-        'artist': 'Monty Python'
-    }
-}
-
 
 class Song(object):
     def __init__(self, title, artist):
-    pass
+        self.title = title
+        self.artist = artist
+
+    def __repr__(self):
+        return 'title: %s, artist: %s' % (self.title, self.artist)
 
 
 class SongDatabase(object):
-    def __init__(self, song_factory: dic.Factory(Song)):
+    def __init__(self, song_factory: dic.rel.Factory(Song)):
         self.song_factory = song_factory
-        self.songs =
+        self.songs = {}
 
-    def __getitem__(self, item):
-        return self.songs[item]
+    def add_song(self, ident, title, artist):
+        self.songs[ident] = self.song_factory(title=title, artist=artist)
 
+    def __getitem__(self, ident):
+        return self.songs[ident]
 
+    def __str__(self):
+        return self.songs.__str__()
 
 
 class Songs:
@@ -43,56 +34,26 @@ class Songs:
 
     def __init__(self, song_database: SongDatabase):
         self.songs = song_database
+        self.songs.add_song('1', 'Lumberjack Song', 'Canadian Guard Choir')
+        self.songs.add_song('2', 'Always Look On the Bright Side of Life', 'Eric Idle')
+        self.songs.add_song('3', 'Spam Spam Spam', 'Monty Python')
 
     def GET(self, id=None):
 
         if id is None:
-            return('Here are all the songs we have: %s' % songs)
-        elif id in songs:
-            song = songs[id]
+            return('Here are all the songs we have: %s' % self.songs)
+        elif id in self.songs:
+            song = self.songs[id]
 
             return(
                 'Song with the ID %s is called %s, and the artist is %s' % (
-                    id, song['title'], song['artist']))
+                    id, song.title, song.artist))
         else:
             return('No song with the ID %s :-(' % id)
 
-    def POST(self, title, artist):
-
-        id = str(max([int(_) for _ in songs.keys()]) + 1)
-
-        songs[id] = {
-            'title': title,
-            'artist': artist
-        }
-
-        return ('Create a new song with the ID: %s' % id)
-
-    def PUT(self, id, title=None, artist=None):
-        if id in songs:
-            song = songs[id]
-
-            song['title'] = title or song['title']
-            song['artist'] = artist or song['artist']
-
-            return(
-                'Song with the ID %s is now called %s, '
-                'and the artist is now %s' % (
-                    id, song['title'], song['artist'])
-            )
-        else:
-            return('No song with the ID %s :-(' % id)
-
-    def DELETE(self, id):
-        if id in songs:
-            songs.pop(id)
-
-            return('Song with the ID %s has been deleted.' % id)
-        else:
-            return('No song with the ID %s :-(' % id)
 
 if __name__ == '__main__':
-    builder = dic.ContainerBuilder()
+    builder = dic.container.ContainerBuilder()
     builder.register_class(Songs)
     builder.register_class(SongDatabase)
     builder.register_class(Song)
