@@ -63,7 +63,7 @@ Relationships
 dic supports basic relationships:
 
 1. `dic.rel.Lazy` - don't create the dependency until it's first used
-2. `dic.rel.Factory` - the component wants to create other components. Lifetime scopes are respected.
+2. `dic.rel.Factory` - the component wants to create other components. Lifetime scopes are respected. Supports custom arguments.
 
 Using a factory:
  ::
@@ -71,7 +71,8 @@ Using a factory:
     import dic
 
     class SimpleThing(object):
-        pass
+        def __init__(self, special_argument):
+            self.special_argument = special_argument
 
     class BuildsThings(object):
         def __init__(self, thing_factory: dic.rel.Factory(SimpleThing)):
@@ -79,7 +80,8 @@ Using a factory:
 
         def build_me_a_thing(self):
             # builds a new thing using the injected factory
-            self.thing_factory()
+            # Note that custom arguments can be provided here
+            self.thing_factory(special_argument="My super special argument")
 
     # build the container
     builder = dic.container.ContainerBuilder()
