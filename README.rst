@@ -105,7 +105,8 @@ FAQ
 
 1. Is dic thread-safe?
 
- Not yet. There's plans to make it thread-safe.
+ Yes. `dic.rel.Lazy` and `dic.container.Container.resolve()` are thread-safe. As a result, do not store the component_context given to `register_callback` callbacks,
+ as this is how thread-safety is enforced.
 
 2. Can I define my own scopes?
 
