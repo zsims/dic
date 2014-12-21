@@ -1,12 +1,16 @@
 import dic
 import threading
+import time
 import unittest
+
 
 class Standalone(object):
     pass
 
+
 class SpecialStandalone(Standalone):
     pass
+
 
 class SimpleComponent(object):
     def __init__(self, s: Standalone):
@@ -189,6 +193,47 @@ class ContainerTestCase(unittest.TestCase):
         self.assertIsNot(component1, component2)
         self.assertIs(component1.standalone, component2.standalone)
 
+    def test_resolve_thread_safe(self):
+        # Obviously can't test this 100%, but should be enough to see if
+        # it has been done right-ish...
+
+        # Arrange
+        finish_first = threading.Event()
+        did_first = threading.Event()
+        did_second = threading.Event()
+        expected_first = Standalone()
+        expected_second = Standalone()
+        actual = [None, None]
+
+        # DODO THIS IS
+        def resolve_standalone(component_context):
+            if actual[0] is None:
+                actual[0] = expected_first
+                did_first.set()
+                # This should cause the container to lock when resolving the second thing
+                finish_first.wait()
+            elif actual[1] is None:
+                actual[1] = expected_second
+                did_second.set()
+
+        self.builder.register_callback(Standalone, resolve_standalone)
+        container = self.builder.build()
+
+        # Act/Assert
+        threading.Thread(target=container.resolve, args=(Standalone,)).start()
+        threading.Thread(target=container.resolve, args=(Standalone,)).start()
+
+        time.sleep(2)
+        self.assertTrue(did_first.is_set())
+        self.assertIs(expected_first, actual[0])
+        self.assertFalse(did_second.is_set())
+
+        # finish the first resolve
+        finish_first.set()
+
+        # wait for the second resolve to finish
+        did_second.wait(timeout=2)
+        self.assertIs(expected_second, actual[1])
 
 if __name__ == '__main__':
     unittest.main()

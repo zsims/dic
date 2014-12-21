@@ -2,7 +2,7 @@ dic
 ===
 
 Dependency Injection Container for Python 3+ influenced partially by Autofac_. dic aims to be a tiny framework to help
-you manage dependencies.
+manage dependencies via IoC.
 
 dic uses Python 3 annotations to provide hints for the components that should be injected.
 
@@ -106,7 +106,7 @@ FAQ
 1. Is dic thread-safe?
 
  Yes. `dic.rel.Lazy` and `dic.container.Container.resolve()` are thread-safe. As a result, do not store the component_context given to `register_callback` callbacks,
- as this is how thread-safety is enforced.
+ as thread-safety is enforced at the container.resolve() level.
 
 2. Can I define my own scopes?
 

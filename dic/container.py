@@ -94,28 +94,25 @@ class ComponentContext(object):
     """
     The context of a component resolve operation.
     A context will be created from a top-level resolve, and then all dependencies will be resolved within that context.
-    This provides a way for thread-safety and circular dependency detection.
     """
     def __init__(self, container):
         self._container = container
-        self._lock = threading.RLock()
 
     def resolve(self, component_type, **kwargs):
         # TODO: split off _container, even though we're an internal class. Still isn't great.
-        with self._lock:
-            if isinstance(component_type, rel.Relationship):
-                # expand the relationship
-                # note that relationships get the container as they're all currently lazy
-                # this *could* support the context in future, but the context shouldn't be stored
-                return component_type.resolve(self._container)
+        if isinstance(component_type, rel.Relationship):
+            # expand the relationship
+            # note that relationships get the container as they're all currently lazy
+            # this *could* support the context in future, but the context shouldn't be stored
+            return component_type.resolve(self._container)
 
-            # normal component
-            if component_type not in self._container.registry_map:
-                raise DependencyResolutionError(
-                    "The requested type %s was not found in the container. Is it registered?" % component_type.__name__)
+        # normal component
+        if component_type not in self._container.registry_map:
+            raise DependencyResolutionError(
+                "The requested type %s was not found in the container. Is it registered?" % component_type.__name__)
 
-            registration = self._container.registry_map[component_type]
-            return registration.create(self, kwargs)
+        registration = self._container.registry_map[component_type]
+        return registration.create(self, kwargs)
 
 
 class Container(object):
@@ -128,6 +125,7 @@ class Container(object):
         :param registry_map: A map of type -> ComponentRegistration
         """
         self.registry_map = registry_map
+        self._resolve_lock = threading.RLock()
 
     def resolve(self, component_type, **kwargs):
         """
@@ -136,8 +134,9 @@ class Container(object):
         :param kwargs: Overriding arguments to use (by name) instead of resolving them.
         :return: An instance of the component.
         """
-        context = ComponentContext(self)
-        return context.resolve(component_type, **kwargs)
+        with self._resolve_lock:
+            context = ComponentContext(self)
+            return context.resolve(component_type, **kwargs)
 
 
 class ContainerBuilder(object):
