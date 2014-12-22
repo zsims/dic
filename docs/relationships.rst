@@ -8,6 +8,7 @@ Factory
 A ``dic.rel.Factory`` relationship can be used when you want to be able to create dependencies from a class, without depending on the dic container directly.
 
 For example:
+
 .. sourcecode:: python
 
     class Part(object):
