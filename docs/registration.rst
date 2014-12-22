@@ -50,6 +50,7 @@ An already-created dependency can be registered directly. This is useful if you'
     # use the container
 
 Note that:
+
 1. Scopes do not apply to components registered in this way
 2. Aliases can still be specified with the ``register_as`` argument
 
@@ -69,6 +70,7 @@ context callback.
         pass
 
     def create_my_thing(component_context):
+        return MyExternalThing()
 
     builder = dic.container.ContainerBuilder()
     builder.register_instance(MyExternalThing, instance)
