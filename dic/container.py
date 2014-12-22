@@ -100,6 +100,10 @@ class _InstanceRegistration(_ComponentRegistration):
     def _create(self, component_context, overriding_args):
         return self._instance
 
+    def __deepcopy__(self, memo):
+        # We don't want to have this copy self._instance when building the container from a builder
+        return self
+
 
 class ComponentContext(object):
     """
