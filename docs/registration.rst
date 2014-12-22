@@ -165,4 +165,4 @@ For example, a scope that creates a dependency per calling thread may look like:
     builder.register_class(MyClass, component_scope=ThreadingScope)
     # ...
 
-Note that the above is a sample. The may instances live beyond the threads.
+Note that the above is a sample. The instances will live beyond the threads.
