@@ -26,6 +26,7 @@ Currently, dic supports:
 3. Registration via:
     1. Constructor matching for a registered class
     2. Custom callback
+    3. Pre-created instances
 4. Lifetime scopes:
     1. Instance per dependency
     2. Single instance
