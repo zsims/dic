@@ -6,6 +6,10 @@ manage dependencies via IoC.
 
 dic uses Python 3 annotations to provide hints for the components that should be injected.
 
+Documentation
+=============
+dic documentation is available via `Read the docs`_.
+
 Install
 =======
 dic is available via pip:
@@ -117,3 +121,4 @@ FAQ
  The philosophy of dic is to remain small, but extensible -- e.g. remain "out of the way." So likely not.
 
 .. _Autofac: http://autofac.org/
+.. _`Read the docs`: http://dic.readthedocs.org/
