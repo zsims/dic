@@ -8,7 +8,7 @@ dic uses Python 3 annotations to provide hints for the components that should be
 
 Documentation
 =============
-dic documentation is available via `Read the docs`_.
+dic documentation is available via `Read the Docs`_.
 
 Install
 =======
@@ -121,4 +121,4 @@ FAQ
  The philosophy of dic is to remain small, but extensible -- e.g. remain "out of the way." So likely not.
 
 .. _Autofac: http://autofac.org/
-.. _`Read the docs`: http://dic.readthedocs.org/
+.. _`Read the Docs`: http://dic.readthedocs.org/
