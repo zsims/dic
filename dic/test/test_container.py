@@ -97,6 +97,24 @@ class ContainerBuilderTestCase(unittest.TestCase):
         y = container.resolve(Standalone)
         self.assertIsNot(x, y)
 
+    def test_built_containers_are_isolated(self):
+        # Arrange
+        self.builder.register_class(Standalone, component_scope=dic.scope.SingleInstance)
+
+        first_container = self.builder.build()
+        second_container = self.builder.build()
+
+        # Act
+        first = first_container.resolve(Standalone)
+        first_prime = first_container.resolve(Standalone)
+        second = second_container.resolve(Standalone)
+        second_prime = second_container.resolve(Standalone)
+
+        # Assert
+        self.assertIs(first, first_prime)
+        self.assertIsNot(first, second)
+        self.assertIs(second, second_prime)
+
 
 class ContainerTestCase(unittest.TestCase):
     def setUp(self):

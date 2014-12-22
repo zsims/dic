@@ -1,4 +1,5 @@
 import abc
+import copy
 import inspect
 import threading
 from . import rel
@@ -98,6 +99,10 @@ class _InstanceRegistration(_ComponentRegistration):
 
     def _create(self, component_context, overriding_args):
         return self._instance
+
+    def __deepcopy__(self, memo):
+        # We don't want to have this copy self._instance when building the container from a builder
+        return self
 
 
 class ComponentContext(object):
@@ -201,4 +206,6 @@ class ContainerBuilder(object):
         Builds a new container using the registered components.
         :return: A container
         """
-        return Container(self.registry)
+        # copy the registry so built containers are isolated
+        registry_copy = copy.deepcopy(self.registry)
+        return Container(registry_copy)
