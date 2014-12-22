@@ -62,5 +62,5 @@ multiple threads will get the same instance.
 
         def ok_ready(self, name):
             # EventuallyNeeded will be created here (rather than directly injected in to the constructor)
-            self.eventually_needed.instance.do_it()
+            self.eventually_needed.value.do_it()
 
