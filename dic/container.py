@@ -84,10 +84,20 @@ class _ConstructorRegistration(_ComponentRegistration):
 class _CallbackRegistration(_ComponentRegistration):
     def __init__(self, callback, component_scope):
         super().__init__(component_scope)
-        self.callback = callback
+        self._callback = callback
 
     def _create(self, component_context, overriding_args):
-        return self.callback(component_context)
+        return self._callback(component_context)
+
+
+class _InstanceRegistration(_ComponentRegistration):
+    def __init__(self, instance):
+        # the scope doesn't matter, but SingleInstance is what it'll always be
+        super().__init__(scope.SingleInstance())
+        self._instance = instance
+
+    def _create(self, component_context, overriding_args):
+        return self._instance
 
 
 class ComponentContext(object):
@@ -125,6 +135,8 @@ class Container(object):
         :param registry_map: A map of type -> ComponentRegistration
         """
         self.registry_map = registry_map
+        # The resolve lock is recursive as a constructor may call a factory (which calls container.resolve()),
+        # without a recursive lock, this would be a deadlock
         self._resolve_lock = threading.RLock()
 
     def resolve(self, component_type, **kwargs):
@@ -172,6 +184,16 @@ class ContainerBuilder(object):
         :param register_as: The types to register the class as, defaults to the given class_type.
         """
         registration = _CallbackRegistration(callback, component_scope())
+        self._register(class_type, registration, register_as)
+
+    def register_instance(self, class_type, instance, register_as=None):
+        """
+        Registers the given instance (already created).
+        :param class_type: The class type.
+        :param instance: The instance to register.
+        :param register_as: The types to register the class as, defaults to the given class_type.
+        """
+        registration = _InstanceRegistration(instance)
         self._register(class_type, registration, register_as)
 
     def build(self):

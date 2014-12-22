@@ -80,6 +80,23 @@ class ContainerBuilderTestCase(unittest.TestCase):
         self.assertIn(SimpleComponent, container.registry_map)
         self.assertNotIn(Standalone, container.registry_map)
 
+    def test_register_overrides_previous_registration(self):
+        # Arrange
+        standalone = Standalone()
+        self.builder.register_instance(Standalone, standalone)
+
+        # Act
+        # This should dis-regard the existing instance registration
+        self.builder.register_class(Standalone)
+
+        # Assert
+        container = self.builder.build()
+
+        x = container.resolve(Standalone)
+        self.assertIsNot(x, standalone)
+        y = container.resolve(Standalone)
+        self.assertIsNot(x, y)
+
 
 class ContainerTestCase(unittest.TestCase):
     def setUp(self):
@@ -192,6 +209,20 @@ class ContainerTestCase(unittest.TestCase):
         # Assert
         self.assertIsNot(component1, component2)
         self.assertIs(component1.standalone, component2.standalone)
+
+    def test_resolve_instance(self):
+        # Arrange
+        standalone = Standalone()
+        self.builder.register_instance(Standalone, standalone)
+        container = self.builder.build()
+
+        # Act
+        x = container.resolve(Standalone)
+        y = container.resolve(Standalone)
+
+        # Assert
+        self.assertIs(x, standalone)
+        self.assertIs(y, standalone)
 
     def test_resolve_thread_safe(self):
         # Obviously can't test this 100%, but should be enough to see if
