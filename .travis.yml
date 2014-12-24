@@ -3,7 +3,6 @@ python:
   - "3.2"
   - "3.3"
   - "3.4"
-  - "pypy"
 script:
   - python -m compileall -f dic
   - python -m unittest discover dic
