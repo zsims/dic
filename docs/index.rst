@@ -12,7 +12,6 @@ dic
    relationships.rst
    resolving.rst
    samples.rst
-   api/dic.rst
-   api/modules.rst
+   api.rst
 
 

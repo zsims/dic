@@ -1,11 +1,9 @@
-dic package
+===========
+API
 ===========
 
-Submodules
-----------
-
 dic.container module
---------------------
+====================
 
 .. automodule:: dic.container
     :members:
@@ -13,7 +11,8 @@ dic.container module
     :show-inheritance:
 
 dic.rel module
---------------
+==============
+
 
 .. automodule:: dic.rel
     :members:
@@ -21,7 +20,7 @@ dic.rel module
     :show-inheritance:
 
 dic.scope module
-----------------
+================
 
 .. automodule:: dic.scope
     :members:
@@ -30,7 +29,7 @@ dic.scope module
 
 
 Module contents
----------------
+===============
 
 .. automodule:: dic
     :members:
