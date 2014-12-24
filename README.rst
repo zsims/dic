@@ -8,8 +8,6 @@ dic uses Python 3 annotations to provide hints for the components that should be
 
 |version| |build| |docs|
 
-|compatibility| |implementations|
-
 Documentation
 =============
 dic documentation is available via `Read the Docs`_.
@@ -128,10 +126,6 @@ FAQ
 .. _Autofac: http://autofac.org/
 .. _`Read the Docs`: http://dic.readthedocs.org/
 .. |version| image:: https://pypip.in/version/dic/badge.svg?text=version
-    :target: https://pypi.python.org/pypi/dic
-.. |compatibility| image:: https://pypip.in/py_versions/dic/badge.svg
-    :target: https://pypi.python.org/pypi/dic
-.. |implementations| image:: https://pypip.in/implementation/dic/badge.svg
     :target: https://pypi.python.org/pypi/dic
 .. |docs| image:: https://readthedocs.org/projects/dic/badge/?version=latest
     :target: https://readthedocs.org/projects/dic/
