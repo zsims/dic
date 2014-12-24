@@ -6,7 +6,7 @@ manage dependencies via IoC.
 
 dic uses Python 3 annotations to provide hints for the components that should be injected.
 
-|Version| |Compatibility| |Implementations| |Downloads|
+|version| |docs| |compatibility| |implementations| |downloads|
 
 Documentation
 =============
@@ -125,11 +125,13 @@ FAQ
 
 .. _Autofac: http://autofac.org/
 .. _`Read the Docs`: http://dic.readthedocs.org/
-.. |Version| image:: https://pypip.in/version/dic/badge.svg?text=version
+.. |version| image:: https://pypip.in/version/dic/badge.svg?text=version
     :target: https://pypi.python.org/pypi/dic
-.. |Downloads| image:: https://pypip.in/download/dic/badge.svg
+.. |downloads| image:: https://pypip.in/download/dic/badge.svg
     :target: https://pypi.python.org/pypi/dic
-.. |Compatibility| image:: https://pypip.in/py_versions/dic/badge.svg
+.. |compatibility| image:: https://pypip.in/py_versions/dic/badge.svg
     :target: https://pypi.python.org/pypi/dic
-.. |Implementations| image:: https://pypip.in/implementation/dic/badge.svg
+.. |implementations| image:: https://pypip.in/implementation/dic/badge.svg
     :target: https://pypi.python.org/pypi/dic
+.. |docs| image:: https://readthedocs.org/projects/dic/badge/?version=latest
+    :target: https://readthedocs.org/projects/dic/
