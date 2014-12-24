@@ -6,4 +6,4 @@ python:
   - "pypy"
 script:
   - python -m compileall -f dic
-  - python -m dic/test
+  - python -m unittest discover dic
