@@ -6,6 +6,8 @@ manage dependencies via IoC.
 
 dic uses Python 3 annotations to provide hints for the components that should be injected.
 
+|Version| |Compatibility| |Implementations| |Format| |Downloads|
+
 Documentation
 =============
 dic documentation is available via `Read the Docs`_.
@@ -30,7 +32,7 @@ Currently, dic supports:
 4. Lifetime scopes:
     1. Instance per dependency
     2. Single instance
-
+    
 Quick Example
 =============
 A quick example on how to use dic:
@@ -123,3 +125,13 @@ FAQ
 
 .. _Autofac: http://autofac.org/
 .. _`Read the Docs`: http://dic.readthedocs.org/
+.. |Version| image:: https://pypip.in/version/dic/badge.svg?text=version
+    :target: https://pypi.python.org/pypi/dic
+.. |Downloads| image:: https://pypip.in/download/dic/badge.svg
+    :target: https://pypi.python.org/pypi/dic
+.. |Compatibility| image:: https://pypip.in/py_versions/dic/badge.svg
+    :target: https://pypi.python.org/pypi/dic
+.. |Implementations| image:: https://pypip.in/implementation/dic/badge.svg
+    :target: https://pypi.python.org/pypi/dic
+.. |Format| image:: https://pypip.in/format/dic/badge.svg
+    :target: https://pypi.python.org/pypi/dic
