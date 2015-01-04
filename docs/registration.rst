@@ -82,6 +82,12 @@ Aliases (register_as)
 =====================
 It's possible to register callbacks and classes under multiple types. This is useful if you want a specialised implementation available as its base class.
 
+If `register_as` isn't specified, then the type of the given component will be used instead. `register_as` can be:
+
+1. A list; or
+2. A tuple; or
+3. A single item
+
 .. sourcecode:: python
 
     class BaseDependency(object):
@@ -96,10 +102,46 @@ It's possible to register callbacks and classes under multiple types. This is us
 
     builder = dic.container.ContainerBuilder()
     builder.register_class(MyClass)
-    builder.register_class(SpecialDependency, register_as=[BaseDependency])
+    builder.register_class(SpecialDependency, register_as=BaseDependency)
+
+    # or available as both:
+    # builder.register_class(SpecialDependency, register_as=(BaseDependency, SpecialDependency))
 
     container = builder.build()
     # use the container
+
+Technically any python object can be used as an alias, but to keep things simple and "self documenting" only types are recommended.
+
+Modules
+=======
+Modules are simple classes that help provide clarity when building the container. To use them, derive from ``dic.container.Module`` and register the instance of
+the module when building the container. For example:
+
+.. sourcecode:: python
+
+    class Filesystem(object):
+        pass
+
+    class WindowsFilesystem(Filesystem):
+        pass
+
+    class DefaultFilesystem(Filesystem):
+        pass
+
+    class FilesystemModule(dic.container.Module):
+        def load(self, builder):
+            if os.name == 'nt':
+                builder.register_class(WindowsFilesystem, register_as=[Filesystem])
+            else:
+                builder.register_class(DefaultFilesystem, register_as=[Filesystem])
+
+    # building the container now has none of this logic
+    builder = dic.container.ContainerBuilder()
+    builder.register_module(FilesystemModule())
+
+    container = builder.build()
+
+    fs = container.resolve(Filesystem)
 
 Scopes
 ======
@@ -168,3 +210,4 @@ For example, a scope that creates a dependency per calling thread may look like:
     # ...
 
 Note that the above is a sample. The instances will live beyond the threads.
+

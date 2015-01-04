@@ -105,7 +105,7 @@ class _InstanceRegistration(_ComponentRegistration):
         return self
 
 
-class ComponentContext(object):
+class _ComponentContext(object):
     """
     The context of a component resolve operation.
     A context will be created from a top-level resolve, and then all dependencies will be resolved within that context.
@@ -152,8 +152,21 @@ class Container(object):
         :return: An instance of the component.
         """
         with self._resolve_lock:
-            context = ComponentContext(self)
+            context = _ComponentContext(self)
             return context.resolve(component_type, **kwargs)
+
+
+class Module(metaclass=abc.ABCMeta):
+    """
+    Module to help structure building of the container.
+    """
+    @abc.abstractmethod
+    def load(self, builder):
+        """
+        Register dependencies from this module.
+        :param builder: The container builder to register components to.
+        """
+        pass
 
 
 class ContainerBuilder(object):
@@ -165,7 +178,11 @@ class ContainerBuilder(object):
 
     def _register(self, class_type, registration, register_as):
         if register_as is None:
-            register_as = [class_type]
+            register_as = class_type
+
+        # if we didn't get a tuple or a list, put it in a lists
+        if type(register_as) is not list and type(register_as) is not tuple:
+            register_as = [register_as]
 
         for available_as in register_as:
             self.registry[available_as] = registration
@@ -200,6 +217,13 @@ class ContainerBuilder(object):
         """
         registration = _InstanceRegistration(instance)
         self._register(class_type, registration, register_as)
+
+    def register_module(self, module):
+        """
+        Registers the module instance.
+        :param module: The module to register.
+        """
+        module.load(self)
 
     def build(self):
         """

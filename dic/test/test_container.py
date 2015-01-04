@@ -17,6 +17,11 @@ class SimpleComponent(object):
         self.standalone = s
 
 
+class SimpleModule(dic.container.Module):
+    def load(self, builder):
+        builder.register_class(Standalone)
+
+
 class ContainerBuilderTestCase(unittest.TestCase):
     def setUp(self):
         self.builder = dic.container.ContainerBuilder()
@@ -61,13 +66,24 @@ class ContainerBuilderTestCase(unittest.TestCase):
 
     def test_register_as_another_type(self):
         # Arrange
-        self.builder.register_class(SpecialStandalone, register_as=[Standalone])
+        self.builder.register_class(SpecialStandalone, register_as=Standalone)
 
         # Act
         container = self.builder.build()
 
         # Assert
         self.assertIn(Standalone, container.registry_map)
+
+    def test_register_as_other_types(self):
+        # Arrange
+        self.builder.register_class(SpecialStandalone, register_as=(Standalone, 'x'))
+
+        # Act
+        container = self.builder.build()
+
+        # Assert
+        self.assertIn(Standalone, container.registry_map)
+        self.assertIn('x', container.registry_map)
 
     def test_register_callback(self):
         # Arrange
@@ -114,6 +130,14 @@ class ContainerBuilderTestCase(unittest.TestCase):
         self.assertIs(first, first_prime)
         self.assertIsNot(first, second)
         self.assertIs(second, second_prime)
+
+    def test_register_module(self):
+        # Arrange/Act
+        self.builder.register_module(SimpleModule())
+        container = self.builder.build()
+
+        # Assert
+        self.assertIn(Standalone, container.registry_map)
 
 
 class ContainerTestCase(unittest.TestCase):
@@ -165,6 +189,21 @@ class ContainerTestCase(unittest.TestCase):
 
         # Assert
         self.assertIs(x, y)
+
+    def test_resolve_custom_tag(self):
+        # Note that this isn't an advertised feature of dic, but still good to test.
+        self.builder.register_class(Standalone, component_scope=dic.scope.SingleInstance, register_as='X')
+        self.builder.register_class(Standalone, component_scope=dic.scope.SingleInstance, register_as='Y')
+        container = self.builder.build()
+
+        # Act
+        x = container.resolve('X')
+        y = container.resolve('Y')
+
+        # Assert
+        self.assertIsNot(x, y)
+        self.assertIsInstance(x, Standalone)
+        self.assertIsInstance(y, Standalone)
 
     def test_resolve_dep_single_instance(self):
         # Arrange
