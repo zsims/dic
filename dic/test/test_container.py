@@ -42,7 +42,7 @@ class ContainerBuilderTestCase(unittest.TestCase):
         container = self.builder.build()
 
         # Assert
-        self.assertEqual(len(container.registry_map), 1)
+        self.assertEqual(len(container._registry), 1)
 
     def test_register_class_simple_deps(self):
         # Arrange
@@ -52,7 +52,7 @@ class ContainerBuilderTestCase(unittest.TestCase):
         container = self.builder.build()
 
         # Assert
-        self.assertEqual(len(container.registry_map), 1)
+        self.assertEqual(len(container._registry), 1)
 
     def test_register_class_defaults_instance_per_dep(self):
         # Arrange
@@ -62,7 +62,7 @@ class ContainerBuilderTestCase(unittest.TestCase):
         container = self.builder.build()
 
         # Assert
-        self.assertIsInstance(container.registry_map[Standalone].component_scope, dic.scope.InstancePerDependency)
+        self.assertIsInstance(container._registry[Standalone].component_scope, dic.scope.InstancePerDependency)
 
     def test_register_as_another_type(self):
         # Arrange
@@ -72,7 +72,7 @@ class ContainerBuilderTestCase(unittest.TestCase):
         container = self.builder.build()
 
         # Assert
-        self.assertIn(Standalone, container.registry_map)
+        self.assertIn(Standalone, container._registry)
 
     def test_register_as_other_types(self):
         # Arrange
@@ -82,8 +82,8 @@ class ContainerBuilderTestCase(unittest.TestCase):
         container = self.builder.build()
 
         # Assert
-        self.assertIn(Standalone, container.registry_map)
-        self.assertIn('x', container.registry_map)
+        self.assertIn(Standalone, container._registry)
+        self.assertIn('x', container._registry)
 
     def test_register_callback(self):
         # Arrange
@@ -93,8 +93,8 @@ class ContainerBuilderTestCase(unittest.TestCase):
         container = self.builder.build()
 
         # Assert
-        self.assertIn(SimpleComponent, container.registry_map)
-        self.assertNotIn(Standalone, container.registry_map)
+        self.assertIn(SimpleComponent, container._registry)
+        self.assertNotIn(Standalone, container._registry)
 
     def test_register_overrides_previous_registration(self):
         # Arrange
@@ -137,7 +137,7 @@ class ContainerBuilderTestCase(unittest.TestCase):
         container = self.builder.build()
 
         # Assert
-        self.assertIn(Standalone, container.registry_map)
+        self.assertIn(Standalone, container._registry)
 
 
 class ContainerTestCase(unittest.TestCase):

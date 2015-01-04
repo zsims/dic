@@ -2,6 +2,7 @@ import abc
 import copy
 import inspect
 import threading
+from . import listener
 from . import rel
 from . import scope
 
@@ -110,11 +111,16 @@ class _ComponentContext(object):
     The context of a component resolve operation.
     A context will be created from a top-level resolve, and then all dependencies will be resolved within that context.
     """
-    def __init__(self, container):
+    def __init__(self, container, registry):
         self._container = container
+        self._registry = registry
 
     def resolve(self, component_type, **kwargs):
-        # TODO: split off _container, even though we're an internal class. Still isn't great.
+        context_id = id(self)
+        container_listener = self._container.listener
+
+        container_listener.resolve_started(context_id, component_type)
+
         if isinstance(component_type, rel.Relationship):
             # expand the relationship
             # note that relationships get the container as they're all currently lazy
@@ -122,24 +128,29 @@ class _ComponentContext(object):
             return component_type.resolve(self._container)
 
         # normal component
-        if component_type not in self._container.registry_map:
+        if component_type not in self._registry:
+            container_listener.resolve_failed(context_id, component_type)
             raise DependencyResolutionError(
                 "The requested type %s was not found in the container. Is it registered?" % component_type.__name__)
 
-        registration = self._container.registry_map[component_type]
-        return registration.create(self, kwargs)
+        registration = self._registry[component_type]
+        created = registration.create(self, kwargs)
+
+        container_listener.resolve_succeeded(context_id, component_type)
+        return created
 
 
 class Container(object):
     """
     IoC container.
     """
-    def __init__(self, registry_map):
+    def __init__(self, registry):
         """
         Creates a new container
-        :param registry_map: A map of type -> ComponentRegistration
+        :param registry: A map of type -> ComponentRegistration
         """
-        self.registry_map = registry_map
+        self.listener = listener.ContainerListener()
+        self._registry = registry
         # The resolve lock is recursive as a constructor may call a factory (which calls container.resolve()),
         # without a recursive lock, this would be a deadlock
         self._resolve_lock = threading.RLock()
@@ -152,7 +163,7 @@ class Container(object):
         :return: An instance of the component.
         """
         with self._resolve_lock:
-            context = _ComponentContext(self)
+            context = _ComponentContext(self, self._registry)
             return context.resolve(component_type, **kwargs)
 
 
@@ -174,6 +185,7 @@ class ContainerBuilder(object):
     Builds a container from the registered configuration.
     """
     def __init__(self):
+        # maps component -> ComponentRegistration
         self.registry = {}
 
     def _register(self, class_type, registration, register_as):
