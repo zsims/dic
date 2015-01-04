@@ -1,10 +1,8 @@
 dic
 ===
 
-Dependency Injection Container for Python 3+ influenced partially by Autofac_. dic aims to be a tiny framework to help
-manage dependencies via IoC.
-
-dic uses Python 3 annotations to provide hints for the components that should be injected.
+Dependency Injection Container for Python 3+ influenced partially by Autofac_. dic aims to be a tiny "out of the way" framework to help
+realise IoC via dependency injection. dic uses Python 3 annotations to provide hints for the components that should be injected.
 
 |version| |build| |docs|
 
@@ -119,9 +117,6 @@ FAQ
 
  Yes. Derive a scope from `dic.scope.Scope`. Scopes can be used to provide lifetime for a calling thread, for example
 
-3. Will you support feature "X"?
-
- The philosophy of dic is to remain small, but extensible -- e.g. remain "out of the way." So likely not.
 
 .. _Autofac: http://autofac.org/
 .. _`Read the Docs`: http://dic.readthedocs.org/

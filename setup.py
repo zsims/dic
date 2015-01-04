@@ -15,7 +15,7 @@ setup(
     scripts=[],
     url='https://github.com/zsims/dic',
     license='LICENSE.txt',
-    description='Dependency Injection Container Micro-framework for implementing IoC',
+    description='Dependency Injection Container for Python 3+. Uses Python 3 annotations to provide hints for the components that should be injected.',
     long_description=long_description,
     install_requires=[],
     classifiers=[
