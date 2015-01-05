@@ -116,10 +116,20 @@ FAQ
 2. Can I define my own scopes?
 
  Yes. Derive a scope from `dic.scope.Scope`. Scopes can be used to provide lifetime for a calling thread, for example
+ 
+Similar Projects
+================
+There's some similar dependency injection containers for python (not mentioning Spring for Python!?) that take different approaches:
+ 
+1. `injector`_ 
+
+2. `Bottle Dependency Injection`_
 
 
 .. _Autofac: http://autofac.org/
 .. _`Read the Docs`: http://dic.readthedocs.org/
+.. _`Bottle Dependency Injection`: https://github.com/bottlepy/bottle-inject
+.. _`injector`: https://github.com/alecthomas/injector
 .. |version| image:: https://pypip.in/version/dic/badge.svg?text=version
     :target: https://pypi.python.org/pypi/dic
 .. |docs| image:: https://readthedocs.org/projects/dic/badge/?version=latest
