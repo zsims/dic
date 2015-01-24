@@ -66,14 +66,22 @@ context callback.
 
 .. sourcecode:: python
 
-    class MyExternalThing(object):
+    class OtherThing(object):
         pass
 
+    class MySpecialThing(object):
+        def __init__(self, other_thing):
+            pass
+
     def create_my_thing(component_context):
-        return MyExternalThing()
+        return MyExternalThing(component_context.resolve(OtherThing))
 
     builder = dic.container.ContainerBuilder()
-    builder.register_instance(MyExternalThing, instance)
+    builder.register_class(OtherThing)
+    
+    builder.register_callback(MySpecialThing, create_my_thing)
+    # or as a lambda
+    # builder.register_callback(MySpecialThing, lambda context: MySpecialThing(context.resolve(OtherThing))
 
     container = builder.build()
     # use the container
