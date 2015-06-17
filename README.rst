@@ -125,8 +125,6 @@ There's some similar dependency injection containers for python (not mentioning 
 
 2. `Bottle Dependency Injection`_
 
-3. `Aglyph`_
-
 
 .. _Autofac: http://autofac.org/
 .. _`Read the Docs`: http://dic.readthedocs.org/
