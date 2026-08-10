@@ -71,6 +71,8 @@ class _ConstructorRegistration(_ComponentRegistration):
         constructor = self._find_constructor()
         if constructor is not None:
             self.argument_types = constructor.__annotations__
+            # The 'return' annotation (e.g. '-> None' on __init__) is not a dependency to resolve
+            self.argument_types.pop('return', None)
 
     def _create(self, component_context, overriding_args):
         argument_map = overriding_args or {}

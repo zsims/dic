@@ -17,6 +17,11 @@ class SimpleComponent(object):
         self.standalone = s
 
 
+class ComponentWithNoneReturnAnnotation(object):
+    def __init__(self, s: Standalone) -> None:
+        self.standalone = s
+
+
 class SimpleModule(dic.container.Module):
     def load(self, builder):
         builder.register_class(Standalone)
@@ -166,6 +171,19 @@ class ContainerTestCase(unittest.TestCase):
 
         # Assert
         self.assertIsInstance(x, SimpleComponent)
+        self.assertIsInstance(x.standalone, Standalone)
+
+    def test_resolve_class_with_none_return_annotation(self):
+        # Arrange
+        self.builder.register_class(Standalone)
+        self.builder.register_class(ComponentWithNoneReturnAnnotation)
+        container = self.builder.build()
+
+        # Act
+        x = container.resolve(ComponentWithNoneReturnAnnotation)
+
+        # Assert
+        self.assertIsInstance(x, ComponentWithNoneReturnAnnotation)
         self.assertIsInstance(x.standalone, Standalone)
 
     def test_resolve_throws_with_missing_dep(self):
