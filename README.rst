@@ -130,7 +130,7 @@ There's some similar dependency injection containers for python (not mentioning 
 .. _`Read the Docs`: http://dic.readthedocs.org/
 .. _`Bottle Dependency Injection`: https://github.com/bottlepy/bottle-inject
 .. _`injector`: https://github.com/alecthomas/injector
-.. |version| image:: https://pypip.in/version/dic/badge.svg?text=version
+.. |version| image:: https://img.shields.io/pypi/v/dic.svg?label=version
     :target: https://pypi.python.org/pypi/dic
 .. |docs| image:: https://readthedocs.org/projects/dic/badge/?version=latest
     :target: https://readthedocs.org/projects/dic/
